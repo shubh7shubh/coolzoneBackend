@@ -1,0 +1,967 @@
+{
+	"info": {
+		"_postman_id": "4f55f4e4-dfac-4569-8aba-fee1a104154b",
+		"name": "Ecommerce-IONINKS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15263448",
+		"_collection_link": "https://www.postman.com/bold-station-611816/workspace/mayank/collection/15263448-4f55f4e4-dfac-4569-8aba-fee1a104154b?action=share&source=collection_link&creator=15263448"
+	},
+	"item": [
+		{
+			"name": "Product Routes",
+			"item": [
+				{
+					"name": "Get all Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/products?page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"products"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "product1",
+									"disabled": true
+								},
+								{
+									"key": "categories",
+									"value": "Laptop",
+									"disabled": true
+								},
+								{
+									"key": "price[gte]",
+									"value": "2000",
+									"disabled": true
+								},
+								{
+									"key": "price[lt]",
+									"value": "2500",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Products --Admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Product -Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTk1YTIxYjE4MTNjNWRlNDQ4OTQwZiIsImlhdCI6MTY5NjE2MDUyMCwiZXhwIjoxNjk2NTkyNTIwfQ.ZQag1EfeKICYxwkIShiGqOlOxgbn3DY0af_RhJrdLEs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "shoes",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "1200",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "puma shoes ",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "Shoes",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/Trigger-Unisex-Shoes (1).jfif",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/Trigger-Unisex-Shoes (2).jfif",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/Trigger-Unisex-Shoes (3).jfif",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/Trigger-Unisex-Shoes (4).jfif",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/Trigger-Unisex-Shoes.jfif"
+									]
+								},
+								{
+									"key": "Stocks",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/product/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updated Product - Admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "shoes",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "price",
+									"value": "2500",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "canon cameras",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "categories",
+									"value": "camera",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/attire 4.webp",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/attire 5.webp",
+										"/D:/IONINKS/E-commerce/mernProjectEcommerce/ecommerce images/camera 1.jpg"
+									],
+									"disabled": true
+								},
+								{
+									"key": "Stock",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1//admin/product/6519894ea959300968143da5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"",
+								"admin",
+								"product",
+								"6519894ea959300968143da5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Product -Admin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/product/65163ecdfd6580aa5782c702",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"65163ecdfd6580aa5782c702"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/product/65163ecdfd6580aa5782c702",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"product",
+								"65163ecdfd6580aa5782c702"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Mayank Jaiswal",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "mayankjaiswal20180@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Mayank@123",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/C:/Users/91934/Downloads/WhatsApp Image 2023-07-23 at 3.13.24 PM.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"mayankjaiswal20180@gmail.com\",\r\n    \"password\":\"mayank@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forget Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"mayankjaiswal20180@gmail.com\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/password/forgot",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"forgot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\":\"mayank@1234\",\r\n    \"confirmPassword\":\"mayank@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/password/reset/8f69c287ac188da97be01d0c856552f4abd5f808",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"reset",
+								"8f69c287ac188da97be01d0c856552f4abd5f808"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Routes",
+			"item": [
+				{
+					"name": "Create / Update Review",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\":\"65197d6938d96b54b8bdf443\",\r\n    \"comment\":\"Well Done Mayank Keep it up\",\r\n    \"rating\":5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/review",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Reviews",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/reviews?id=65197d6938d96b54b8bdf443",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "65197d6938d96b54b8bdf443"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/reviews?productId=65197d6938d96b54b8bdf443&id=651a48025f40a2085cb807a8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "productId",
+									"value": "65197d6938d96b54b8bdf443"
+								},
+								{
+									"key": "id",
+									"value": "651a48025f40a2085cb807a8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get UserDetails",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single User .. Admin",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/user/6519543a1d7a364d70af60b5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"6519543a1d7a364d70af60b5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user --admin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/user/65195a21b1813c5de448940f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"65195a21b1813c5de448940f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update/ Change password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldPassword\":\"Mayank@123\",\r\n    \"newPassword\":\"Chiku@123\",\r\n    \"confirmPassword\":\"Chiku@123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/password/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User role--admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n     \"name\": \"Mayank Jaiswal\",\r\n    \"email\": \"vfvds@gmail.com\",\r\n    \"role\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/user/6519543a1d7a364d70af60b5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"6519543a1d7a364d70af60b5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users..Admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "mayankjaiswal20180@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Mayank Jaiswal",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/E:/realme 3i/_DSC1376.JPG"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/me/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"me",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Routes",
+			"item": [
+				{
+					"name": "Create New Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemsPrice\":200,\r\n    \"taxPrice\":\"36\",\r\n    \"shippingPrice\":\"100\",\r\n    \"totalPrice\":\"336\",\r\n    \"orderItems\":[\r\n       {\r\n             \"product\":\"65197d6938d96b54b8bdf443\",\r\n             \"name\":\"my new product 555\",\r\n             \"price\":1200,\r\n             \"image\":\"sample Image\",\r\n             \"quantity\":1\r\n       }\r\n   ],\r\n    \"shippingInfo\":{\r\n        \"address\":\"Rg Appartments\",\r\n        \"city\":\"indore\",\r\n        \"state\":\"madhya pradesh\",\r\n        \"country\":\"India\",\r\n        \"pinCode\":\"452001\",\r\n        \"phoneNo\":\"9340163319\"\r\n    },\r\n    \"paymentInfo\":{\r\n        \"id\":\"sample paymentInfo\",\r\n        \"status\":\"succeeded\"\r\n    }\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/order/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/order/651a554e2fb65d48a8277ca1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"651a554e2fb65d48a8277ca1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Logged in User Order / My Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/orders/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update /Process Order",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\":\"Delivered\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/order/651a53ec2fb65d48a8277c7d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"order",
+								"651a53ec2fb65d48a8277c7d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/admin/order/651a53ec2fb65d48a8277c7d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"order",
+								"651a53ec2fb65d48a8277c7d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment Routes",
+			"item": [
+				{
+					"name": "pay payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\":\"70000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9000/api/v1/payment/process",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"process"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/stripeapikey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"stripeapikey"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
