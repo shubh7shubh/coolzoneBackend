@@ -4,6 +4,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
+const wishlistItemSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+  },
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -108,8 +115,11 @@ const userSchema = new mongoose.Schema({
 
   wishlist: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product"
+    ref: 'Product',
   }],
+
+
+
   wishlistDetails: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product"
@@ -130,6 +140,7 @@ const userSchema = new mongoose.Schema({
 
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+
 
 });
 

@@ -6,14 +6,15 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 const cors = require("cors");
+const dotenv = require("dotenv").config();
 
 
 const errorMiddleware = require("./middleware/error");
 
 // Config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
-}
+// if (process.env.NODE_ENV !== "PRODUCTION") {
+//   require("dotenv").config({ path: "backend/config/config.env" });
+// }
 
 app.use(cors());
 app.use(express.json());
@@ -50,19 +51,19 @@ app.use(bodyParser.json({
   type: ["application/x-www-form-urlencoded", "application/json"], // Support json encoded bodies
 }));
 // const path = require('path')
- 
-app.use(express.static(path.resolve(__dirname,'uploads')));
+
+app.use(express.static(path.resolve(__dirname, 'uploads')));
 
 var storage = multer.diskStorage({
-    destination:(req,file,cb)=>{
-       cb(null,'../uploads')
-    },
-    filename:(req,file,cb)=>{
-        cb(null,file.originalname)
-    }
+  destination: (req, file, cb) => {
+    cb(null, '../uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname)
+  }
 })
 
-var upload = multer ({storage:storage })
+var upload = multer({ storage: storage })
 app.use(upload.any());
 // Middleware for Errors
 app.use(errorMiddleware);

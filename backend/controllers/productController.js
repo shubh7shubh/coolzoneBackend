@@ -1,5 +1,5 @@
 const Product = require("../models/productModel");
-const UserM = require("../models/userModel");
+const User = require("../models/userModel");
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
@@ -7,113 +7,133 @@ const cloudinary = require("cloudinary");
 const path = require("path");
 const { log, error } = require("console");
 const { privateEncrypt } = require("crypto");
-const  csv = require('csvtojson')
+const csv = require('csvtojson')
 const fs = require("fs");
+const { multerMiddleware } = require("../middleware/multer");
+const { faker } = require('@faker-js/faker');
 
 
-// Create Product -- Admin
+exports.getLatestProducts = catchAsyncErrors(async (req, res, next) => {
+  let products;
+  products = await Product.find({}).sort({ createdAt: -1 }).limit(10);
+  return res.status(200).json({
+    success: true,
+    products
+  })
+})
+
+
+exports.getAllCategories = catchAsyncErrors(async (req, res, next) => {
+
+  let categories;
+  categories = await Product.distinct("category")
+
+  return res.status(200).json({
+    success: true,
+    categories
+  })
+})
+
+
+
+exports.createProduct = async (req, res, next) => {
+  try {
+    const { name, price, stock, category } = req.body;
+
+    console.log("req.body:", req.body); // Log the entire req.body to check text fields
+    // console.log("req.files:", req.files); // Log the files received
+
+    // const images = req.files.map((file) => ({
+    //   url: `/uploads/${file.filename}`,
+    // }));
+
+    // console.log("images:", images); // Log the images array
+
+    console.log(req.body, "sdfkljsdlk");
+
+    const newProduct = await Product.create({
+      name,
+      // images,
+      price,
+      stock,
+      category: category.toLowerCase(),
+    });
+    res.status(201).json({ product: newProduct });
+  } catch (error) {
+    console.error(error);
+    // Handle the error appropriately, send an error response, etc.
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 // exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-//   let images = [];
-//   if (typeof req.files.images === "string") {
-//     images.push(req.files.images);
-//   } else {
-//     images = req.files.images;
-//   }
+//   let images = Array.isArray(req.files.productImages) ? req.files.productImages : [req.files.productImages];
 
-//   const imagesLinks = [];
 
-//   for (let i = 0; i < images.length; i++) {
-//     const file = images[i];
-//     const filepath = path.resolve(__dirname, "../uploads", file.name);
-//     await file.mv(filepath);
-//     const result = await cloudinary.v2.uploader.upload(filepath, {
-//       folder: "products",
-//     });
-
-//     imagesLinks.push({
-//       public_id: result.public_id,
-//       url: result.secure_url,
-//     });
-//   }
-
-//   req.body.images = imagesLinks;
-//   req.body.user = req.user.id;
-
-//   const product = await Product.create(req.body);
+//   console.log(images, "images")
+//   // for (const file of images) {
+//   //   const { path: filepath } = file;
+//   //   const result = await cloudinary.uploader.upload(filepath, { folder: "products" });
+//   //   console.log(result, "result")
+//   //   imagesLinks.push({
+//   //     public_id: result.public_id,
+//   //     url: result.secure_url,
+//   //   });
+//   //   // fs.unlinkSync(filepath); // Delete the uploaded image from local storage
+//   // }
+//   // console.log(imagesLinks, "images")
+//   const { name, category, price, stock } = req.body;
+//   const product = await Product.create({ name, category, price, stock, images: imagesLinks });
 
 //   res.status(201).json({
 //     success: true,
-//     product,
+//     message: "Product created successfully"
 //   });
 // });
 // =============================================
-exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-  let images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
-  const imagesLinks = [];
-
-  for (const file of images) {
-    const { path: filepath } = file;
-    const result = await cloudinary.uploader.upload(filepath, { folder: "products" });
-
-    imagesLinks.push({
-      public_id: result.public_id,
-      url: result.secure_url,
-    });
-    // fs.unlinkSync(filepath); // Delete the uploaded image from local storage
-  }
-
-  const product = await Product.create({ ...req.body, images: imagesLinks, user: req.user.id });
-
-  res.status(201).json({
-    success: true,
-    product,
-  });
-});
-// =============================================
 exports.addProductsInBulk = catchAsyncErrors(async (req, res) => {
   try {
-   
-      var userData =[];
-      
-      const file = req.files.file;
-      const filepath = path.resolve(__dirname, "../uploads", file.name);
-     const out = await file.mv(filepath);
-      
-     await csv()
-      .fromFile(filepath)
-      .then(async(response)=>{
-          // console.log(response);
-          for(var x=0; x<response.length;x++){
-             userData.push({
-              name: response[x].name ,
-              description: response[x].description ,
-              brand: response[x].brand ,
-              specification: response[x].specification ,
-              price: response[x].price ,
-              best_seller: response[x].best_seller ,
-              category:response[x].category ,
-              Stock:response[x].Stock,
-              guarantee:response[x].guarantee,
-              featured:response[x].featured,
-              // user:response[x].AddedBY,
 
-             }) 
-            }
-            
-            // console.log("i am user data"+ JSON.stringify(userData));
-         await Product.insertMany(userData)
+    var userData = [];
+
+    const file = req.files.file;
+    const filepath = path.resolve(__dirname, "../uploads", file.name);
+    const out = await file.mv(filepath);
+
+    await csv()
+      .fromFile(filepath)
+      .then(async (response) => {
+        // console.log(response);
+        for (var x = 0; x < response.length; x++) {
+          userData.push({
+            name: response[x].name,
+            description: response[x].description,
+            brand: response[x].brand,
+            specification: response[x].specification,
+            price: response[x].price,
+            best_seller: response[x].best_seller,
+            category: response[x].category,
+            Stock: response[x].Stock,
+            guarantee: response[x].guarantee,
+            featured: response[x].featured,
+            // user:response[x].AddedBY,
+
+          })
+        }
+
+        // console.log("i am user data"+ JSON.stringify(userData));
+        await Product.insertMany(userData)
       })
-      // console.log(userData);
-      res.status(201).json({
-        success: true,
-        message:"Excel data added to db",
-        userData:userData
-      });
-     
+    // console.log(userData);
+    res.status(201).json({
+      success: true,
+      message: "Excel data added to db",
+      userData: userData
+    });
+
   } catch (error) {
     res.status(400).json({
       success: false,
-      message:error.message,
+      message: error.message,
       userData
     });
   }
@@ -123,31 +143,61 @@ exports.addProductsInBulk = catchAsyncErrors(async (req, res) => {
 
 // ===============================================
 
-// Get All Product
+// Get All Product || Search filters etc
 exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
-  const resultPerPage = 8;
-  const productsCount = await Product.countDocuments();
+  try {
 
-  const apiFeature = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter();
+    const { category, price, search, sort } = req.query;
 
-  let products = await apiFeature.query;
+    const page = Number(req.query.page) || 1
+    // 1,2,3,4,5,6,7,8
+    // 9,10,11,12,13,14,15,16
+    // 17,18,19,20,21,22,23,24
+    const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
+    const skip = (page - 1) * limit;
+    const baseQuery = {}
 
-  let filteredProductsCount = products.length;
+    if (search) {
+      baseQuery.name = {
+        $regex: search,
+        $options: "i",
+      }
+    }
 
-  apiFeature.pagination(resultPerPage);
+    if (price) {
+      baseQuery.price = {
+        $lte: Number(price)
+      }
+    }
 
-  products = await apiFeature.query;
+    if (category) baseQuery.category = category;
 
-  res.status(200).json({
-    success: true,
-    products,
-    productsCount,
-    resultPerPage,
-    filteredProductsCount,
-  });
+    const productsPromise = Product.find(baseQuery)
+      .sort(sort && { price: sort === "asc" ? 1 : -1 })
+      .limit(limit)
+      .skip(skip);
+
+    const [products, filteredOnlyProduct] = await Promise.all([
+      productsPromise,
+      Product.find(baseQuery),
+    ]);
+
+    const totalPage = Math.ceil(filteredOnlyProduct.length / limit)
+
+
+    return res.status(200).json({
+      success: true,
+      products,
+      totalPage,
+    });
+
+  } catch (error) {
+    throw new Error(error)
+  }
+
 });
+
+
 
 // Get All Product (Admin)
 exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
@@ -160,15 +210,15 @@ exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
 });
 // =================================================================================
 // Get all Catagory  Names
-exports.getCategoriesNames = catchAsyncErrors(async (req, res, next) => {
-  const categories = await Product.distinct("category");
+// exports.getCategoriesNames = catchAsyncErrors(async (req, res, next) => {
+//   const categories = await Product.distinct("category");
 
-  res.status(200).json({
-    success: true,
-    message: "all categories listed below",
-    allCategories: categories,
-  });
-});
+//   res.status(200).json({
+//     success: true,
+//     message: "all categories listed below",
+//     allCategories: categories,
+//   });
+// });
 // Get Product Details
 exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
@@ -186,60 +236,24 @@ exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
 // // Update Product -- Admin
 
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
+  const { name, category, price, stock } = req.body;
   let product = await Product.findById(req.params.id);
 
   if (!product) {
     return next(new ErrorHander("Product not found", 404));
   }
 
-  // Images Start Here
-  let images = [];
-  if (req.files && req.files.images) {
-    if (req.files.images.length) {
-      images = req.files.images;
-    } else {
-      images.push(req.files.images);
-    }
-  }
+  if (name) product.name = name
+  if (price) product.price = price
+  if (category) product.category = category
+  if (stock) product.stock = stock
 
-  if (images !== undefined) {
-    // Deleting Images From Cloudinary
-    for (let i = 0; i < product.images.length; i++) {
-      const file = product.images[i];
+  await product.save();
 
-      await cloudinary.v2.uploader.destroy(file.public_id);
-    }
-
-    // product.images[i].public_id--------------^
-    const imagesLinks = [];
-
-    for (let i = 0; i < images.length; i++) {
-      const file = images[i];
-      const filepath = path.resolve(__dirname, "../uploads", file.name);
-      await file.mv(filepath);
-      const result = await cloudinary.v2.uploader.upload(filepath, {
-        folder: "products",
-      });
-      // images[i]-----------------------------------------^
-      imagesLinks.push({
-        public_id: result.public_id,
-        url: result.secure_url,
-      });
-    }
-
-    req.body.images = imagesLinks;
-  }
-
-  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  res.status(200).json({
+  return res.status(201).json({
     success: true,
-    product,
-  });
+    message: "Product update Successfully"
+  })
 });
 // ============================================
 
@@ -252,14 +266,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Product not found", 404));
   }
 
-  // Deleting Images From Cloudinary
-  for (let i = 0; i < product.images.length; i++) {
-    const file = product.images[i];
-
-    await cloudinary.v2.uploader.destroy(file.public_id);
-  }
-
-  await product.remove();
+  await product.deleteOne()
 
   res.status(200).json({
     success: true,
@@ -397,44 +404,35 @@ exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
+
 // add to WishList
 exports.addToWishlist = catchAsyncErrors(async (req, res, next) => {
   const { _id } = req.user;
-  let productId = req.params.id;
 
+  let { productId } = req.body
+  console.log(productId, "id")
   try {
     // Find the user
-    const user = await UserM.findById(_id);
+    const user = await User.findById(_id);
 
-    // Check if the product is already in the wishlist
-    const alreadyAdded = user.wishlist.find(
-      (id) => id.toString() === productId
-    );
-
-    // If the product is already in the wishlist, remove it
-    if (alreadyAdded) {
-      user.wishlist = user.wishlist.filter(
-        (id) => id.toString() !== productId
-      );
-    } else {
-      // Add the product to the wishlist
-      user.wishlist.push(productId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Save the user changes
-    await user.save();
+    // console.log(user, "user")
 
-    // Get all of the product details for the products in the user's wishlist
-    const productDetails = await Product.find({
-      _id: { $in: user.wishlist },
-    });
+    // Check if the product is already in the wishlist
+    const isProductInWishlist = user.wishlist.some((item) => item && item.equals(productId));
 
-    // Add the product details to the user object
-    user.wishlistDetails = productDetails;
-  
-    await user.populate('wishlistDetails').execPopulate();
+    if (isProductInWishlist) {
+      return res.status(400).json({ success: false, message: 'Product already in wishlist' });
+    }
 
-    // Save the user changes
+
+
+    // Add the product to the wishlist
+    user.wishlist.push(productId);
     await user.save();
 
     // Return the updated user object
@@ -443,3 +441,84 @@ exports.addToWishlist = catchAsyncErrors(async (req, res, next) => {
     throw new Error(error);
   }
 });
+
+
+// Get user's wishlist
+exports.getWishlist = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+
+    // Find the user by userId
+    const user = await User.findById(_id).populate({
+      path: 'wishlist',
+      model: 'Product',
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({ success: true, wishlist: user.wishlist });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+
+
+// const generateRandomProducts = async (count = 20) => {
+//   const products = [];
+
+//   for (let i = 0; i < count; i++) {
+//     const product = {
+//       name: faker.commerce.productName(),
+//       // photo: "uploads\\1704992485278-macbook-459196_1280 (1).jpg",
+//       price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
+//       stock: faker.commerce.price({ min: 0, max: 100, dec: 0 }),
+//       category: faker.commerce.department(),
+//       createdAt: new Date(faker.date.past()),
+//       updatedAt: new Date(faker.date.recent()),
+//       __v: 0,
+//     };
+
+//     products.push(product);
+//   }
+
+//   await Product.create(products);
+
+//   console.log({ succecss: true });
+// };
+
+// const deleteRandomsProducts = async (count = 10) => {
+//   const products = await Product.find({}).skip(2);
+
+//   for (let i = 0; i < products.length; i++) {
+//     const product = products[i];
+//     await product.deleteOne();
+//   }
+
+//   console.log({ succecss: true });
+// };
+
+// generateRandomProducts(20)
+
+
+// const { name, price, stock, category } = req.body;
+
+// // If the request includes a specific product, create that product
+// if (name && price && stock && category) {
+//   const newProduct = await Product.create({
+//     name,
+//     price,
+//     stock,
+//     category: category.toLowerCase(),
+//   });
+
+//   res.status(201).json({ product: newProduct });
+// } else {
+//   // Otherwise, generate random products
+//   await generateRandomProducts(20);
+//   res.status(201).json({ success: true, message: "Random products generated successfully." });
+// }
