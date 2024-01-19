@@ -21,11 +21,11 @@ const {
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const router = express.Router();
 
-const path = require("path");
+// const path = require("path");
 // import {upload} from "../middlewares/multer.middleware.js"
 // import { upload } from "../middleware/multer.js";
 
-const { multerMiddleware } = require('../middleware/multer.js');
+// const { multerMiddleware } = require('../middleware/multer.js');
 
 
 
