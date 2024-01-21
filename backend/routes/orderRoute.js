@@ -17,32 +17,7 @@ const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const { protected } = require("../middleware/protected");
 const { newOrder, getSingleOrder, allOrders, myOrders, deleteOrder, processOrder } = require("../controllers/orderController");
 
-// router.route("/order/new").post(isAuthenticatedUser, newOrder);
 
-// router.route("/admin/orders").post(isAuthenticatedUser, authorizeRoles("admin"), createAdminOrder);
-
-
-// router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
-
-// router.route("/orders/me").get(isAuthenticatedUser, myOrders);
-
-// router 
-//   .route("/admin/orders")
-//   .get(isAuthenticatedUser, authorizeRoles("admin"), getAllOrders);
-
-
-
-// router
-//   .route("/admin/updateorderdetails/:id")
-//   .put(isAuthenticatedUser, authorizeRoles("admin"), updateAdminOrder)
-
-// router
-//   .route("/admin/order/:id")
-//   .put(isAuthenticatedUser, authorizeRoles("admin"), updateOrder)
-//   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteOrder);
-// router.route('/buy-now').post(isAuthenticatedUser, buyNow);
-
-// route - /api/v1/order/new
 router.route("/order/new").post(newOrder);
 
 // // route - /api/v1/order/my
