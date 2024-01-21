@@ -15,7 +15,7 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   // const file= req.files.avatar;
   // const filepath= path.resolve(__dirname,'../uploads',file.name);
   // await file.mv(filepath);
-  
+
   // const myCloud = await cloudinary.v2.uploader.upload(filepath, {
   //   folder: "avatars",
   //   width: 150,
@@ -81,7 +81,7 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
- 
+
   if (!user) {
     const error = new ErrorHander("User not found", 404); // Set the statusCode
     return next(error);
@@ -158,10 +158,10 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
-   // Populate the wishlist products with all details
-   const productDetails = await Product.find({ _id: { $in: user.wishlist } });
-   user.wishlistDetails = productDetails;
- 
+  // Populate the wishlist products with all details
+  const productDetails = await Product.find({ _id: { $in: user.wishlist } });
+  user.wishlistDetails = productDetails;
+
   res.status(200).json({
     success: true,
     user,
@@ -201,7 +201,7 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
   // const file= req.files.avatar;
   // const filepath= path.resolve(__dirname,'../uploads',file.name);
   // await file.mv(filepath);
-  
+
   // if (filepath !== "") {
   //   const user = await User.findById(req.user.id);
 
@@ -229,7 +229,7 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data : user
+    data: user
   });
 });
 
@@ -287,17 +287,16 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
       new ErrorHander(`User does not exist with Id: ${req.params.id}`, 400)
     );
   }
+  // const imageId = user.avatar.public_id;
 
-  const imageId = user.avatar.public_id;
- 
-  await cloudinary.v2.uploader.destroy(imageId);
+  // await cloudinary.v2.uploader.destroy(imageId);
 
   await user.remove();
 
   res.status(200).json({
     success: true,
     message: "User Deleted Successfully",
-    data:user 
+    data: user
   });
 });
 
@@ -306,7 +305,7 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
 
 // Create a new customer by admin
 exports.createCustomer = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, mobileNo, address,landmark, State,city } = req.body;
+  const { name, email, mobileNo, address, landmark, State, city } = req.body;
 
   // Check if user with the provided email already exists
   const existingUser = await User.findOne({ email });

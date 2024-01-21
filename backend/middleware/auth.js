@@ -31,3 +31,27 @@ exports.authorizeRoles = (...roles) => {
     next();
   };
 };
+
+
+
+exports.isAuthenticatedAdmin = catchAsyncErrors(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) return next(new ErrorHander("Please enter email and password", 400));
+
+
+  // Authenticate the user based on email and password
+  const user = await User.findOne({ email });
+
+  if (!user || !(await user.comparePassword(password)) || user.role !== 'admin') {
+    return next(new ErrorHander("Invalid credentials or unauthorized access", 401));
+  }
+
+  req.user = user;
+  next();
+});
+
+
+
+
+
