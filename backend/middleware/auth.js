@@ -34,23 +34,50 @@ exports.authorizeRoles = (...roles) => {
 
 
 
+// exports.isAuthenticatedAdmin = catchAsyncErrors(async (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   if (!email || !password) return next(new ErrorHander("Please enter email and password", 400));
+
+
+//   // Authenticate the user based on email and password
+//   const user = await User.findOne({ email });
+
+//   if (!user || !(await user.comparePassword(password)) || user.role !== 'admin') {
+//     return next(new ErrorHander("Invalid credentials or unauthorized access", 401));
+//   }
+
+//   req.user = user;
+//   next();
+// });
+
 exports.isAuthenticatedAdmin = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) return next(new ErrorHander("Please enter email and password", 400));
-
-
-  // Authenticate the user based on email and password
-  const user = await User.findOne({ email });
-
-  if (!user || !(await user.comparePassword(password)) || user.role !== 'admin') {
-    return next(new ErrorHander("Invalid credentials or unauthorized access", 401));
+  if (!email || !password) {
+    return next(new ErrorHander("Please enter email and password", 400));
   }
 
-  req.user = user;
-  next();
-});
+  try {
+    // Authenticate the user based on email and password
+    const user = await User.findOne({ email });
 
+    if (!user || !(await user.comparePassword(password))) {
+      return next(new ErrorHander("Invalid credentials", 401));
+    }
+
+    // Check if the user has the 'admin' role
+    if (user.role !== 'admin') {
+      return next(new ErrorHander("Unauthorized access", 401));
+    }
+
+    // If all checks pass, set the user in the request and proceed
+    req.user = user;
+    next();
+  } catch (error) {
+    return next(new ErrorHander("Error authenticating user", 500));
+  }
+});
 
 
 

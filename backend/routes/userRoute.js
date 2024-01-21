@@ -17,7 +17,7 @@ const {
   updateCustomerDetails
 
 } = require("../controllers/userController");
-const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+const { isAuthenticatedUser, authorizeRoles, isAuthenticatedAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -54,6 +54,6 @@ router
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
 
 router.route("/admin/login")
-  .post(authorizeRoles("admin"), loginUser);
+  .post(isAuthenticatedAdmin, loginUser);
 
 module.exports = router;
