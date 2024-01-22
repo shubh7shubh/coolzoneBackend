@@ -16,6 +16,7 @@ const {
   getLatestProducts,
   getAllCategories,
   getWishlist,
+  deleteFromWishlist,
 
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -78,6 +79,7 @@ router.route("/getuserreviews").get(isAuthenticatedUser, getUserReviews)
 
 router.route("/addToWishlist").post(isAuthenticatedUser, addToWishlist)
 router.route("/getWishlist").get(isAuthenticatedUser, getWishlist)
+router.route("/wishlist/:wishlistId").delete(isAuthenticatedUser, deleteFromWishlist)
 
 
 module.exports = router;

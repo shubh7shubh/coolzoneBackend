@@ -37,6 +37,14 @@ router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 
+
+
+
+
+
+
+
+
 router
   .route("/admin/users")
   .get(isAuthenticatedUser, authorizeRoles("admin"), getAllUser);
@@ -54,6 +62,6 @@ router
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
 
 router.route("/admin/login")
-  .post(isAuthenticatedAdmin, loginUser);
+  .post(authorizeRoles, loginUser);
 
 module.exports = router;

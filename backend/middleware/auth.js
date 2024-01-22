@@ -33,52 +33,26 @@ exports.authorizeRoles = (...roles) => {
 };
 
 
-
 // exports.isAuthenticatedAdmin = catchAsyncErrors(async (req, res, next) => {
-//   const { email, password } = req.body;
+//   const token = req.headers.authorization.split(" ")[1];
 
-//   if (!email || !password) return next(new ErrorHander("Please enter email and password", 400));
-
-
-//   // Authenticate the user based on email and password
-//   const user = await User.findOne({ email });
-
-//   if (!user || !(await user.comparePassword(password)) || user.role !== 'admin') {
-//     return next(new ErrorHander("Invalid credentials or unauthorized access", 401));
+//   if (!token) {
+//     return next(new ErrorHander("Please Login to access this resource", 401));
 //   }
 
-//   req.user = user;
-//   next();
+//   try {
+//     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+
+//     const user = await User.findById(decodedData.id);
+
+//     if (!user || user.role !== 'admin') {
+//       return next(new ErrorHander("Unauthorized access", 403));
+//     }
+
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     console.error("Error in isAuthenticatedAdmin middleware:", error);
+//     return next(new ErrorHander("Error authenticating admin", 500));
+//   }
 // });
-
-exports.isAuthenticatedAdmin = catchAsyncErrors(async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(new ErrorHander("Please enter email and password", 400));
-  }
-
-  try {
-    // Authenticate the user based on email and password
-    const user = await User.findOne({ email });
-
-    if (!user || !(await user.comparePassword(password))) {
-      return next(new ErrorHander("Invalid credentials", 401));
-    }
-
-    // Check if the user has the 'admin' role
-    if (user.role !== 'admin') {
-      return next(new ErrorHander("Unauthorized access", 401));
-    }
-
-    // If all checks pass, set the user in the request and proceed
-    req.user = user;
-    next();
-  } catch (error) {
-    return next(new ErrorHander("Error authenticating user", 500));
-  }
-});
-
-
-
-

@@ -32,6 +32,73 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: [validator.isEmail, "Please Enter a valid Email"],
   },
+  contactNumber: {
+    type: Number,
+    // required: [true, "Please Enter Your Name"],
+    // maxLength: [30, "Name cannot exceed 30 characters"],
+    // minLength: [4, "Name should have more than 4 characters"],
+  },
+
+  mobileNo: {
+    type: String,
+    // required: [true, "Please Enter Your Mobile Number"],
+  },
+
+  isFirstTimeLogin: {
+    type: Boolean,
+    default: true
+  },
+  // avatar: {
+  //   public_id: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   url: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
+  role: {
+    type: String,
+    default: "user",
+  },
+
+  myAddress: [
+    {
+      address: {
+        type: String,
+        required: [true, "Please Enter Your Address"],
+        maxLength: [100, "Address cannot exceed 100 characters"],
+      },
+      city: {
+        type: String,
+        required: [true, "Please Enter Your City"],
+        maxLength: [50, "City cannot exceed 50 characters"],
+      },
+      state: {
+        type: String,
+        required: [true, "Please Enter Your State"],
+        maxLength: [50, "State cannot exceed 50 characters"],
+      },
+      country: {
+        type: String,
+        required: [true, "Please Enter Your Country"],
+        maxLength: [50, "Country cannot exceed 50 characters"],
+      },
+      pinCode: {
+        type: Number,
+        required: [true, "Please Enter Your Pin Code"],
+        validate: {
+          validator: function (v) {
+            // Check if it's a 6-digit number
+            return /^\d{6}$/.test(v);
+          },
+          message: "Pin Code should be a 6-digit number.",
+        },
+      },
+    },
+  ],
+
   password: {
     type: String,
     required: [true, "Please Enter Your Password"],
@@ -75,6 +142,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
+
 
 
   addresses: [{

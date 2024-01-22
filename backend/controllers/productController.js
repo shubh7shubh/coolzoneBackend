@@ -466,6 +466,33 @@ exports.getWishlist = async (req, res, next) => {
 };
 
 
+// Delete from wishlist
+
+
+exports.deleteFromWishlist = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const wishlistId = req.params.wishlistId;
+
+    // Find the user by userId
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Use $pull to remove the specified wishlistId from the wishlist array
+    user.wishlist.pull(wishlistId);
+
+    // Save the updated user document
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Item removed from wishlist' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
 
 
 // const generateRandomProducts = async (count = 20) => {
