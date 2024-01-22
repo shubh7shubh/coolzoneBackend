@@ -25,7 +25,7 @@ const router = express.Router();
 
 router.route("/me/addAddress").post(isAuthenticatedUser, addAddress);
 router.route("/me/getMyAddress").get(isAuthenticatedUser, getAllAddresses);
-router.route("/me/deleteAddress/:addressId").get(isAuthenticatedUser, deleteAddress);
+router.route("/me/deleteAddress/:addressId").delete(isAuthenticatedUser, deleteAddress);
 
 
 
