@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
-const cloudinary = require("cloudinary");
+// const cloudinary = require("cloudinary");
 const path = require("path");
 const { log, error } = require("console");
 const { privateEncrypt } = require("crypto");
@@ -11,6 +11,7 @@ const csv = require('csvtojson')
 const fs = require("fs");
 const { multerMiddleware } = require("../middleware/multer");
 const { faker } = require('@faker-js/faker');
+const uploadOnCloudinary = require("../utils/cloudinary");
 
 
 exports.getLatestProducts = catchAsyncErrors(async (req, res, next) => {
@@ -41,22 +42,27 @@ exports.createProduct = async (req, res, next) => {
     const { name, price, stock, category } = req.body;
 
     console.log("req.body:", req.body); // Log the entire req.body to check text fields
-    // console.log("req.files:", req.files); // Log the files received
+    console.log("req.files:", req.files); // Log the files received
 
-    // const images = req.files.map((file) => ({
-    //   url: `/uploads/${file.filename}`,
-    // }));
+    // Get the Cloudinary URLs for the uploaded images
+    const imageUrls = await Promise.all(req.files.map(async (file) => {
+      const imageUrl = await uploadOnCloudinary(file.path);
+      return imageUrl.secure_url; // Assuming you want to store the secure URL
+    }));
+    // Check the number of images
+    if (imageUrls.length > 4) {
+      return res.status(400).json({ success: false, message: "Only 4 images are allowed." });
+    }
 
-    // console.log("images:", images); // Log the images array
-
-    console.log(req.body, "sdfkljsdlk");
+    console.log(imageUrls, "sdfkljsdlk");
 
     const newProduct = await Product.create({
       name,
-      // images,
+      productImages: imageUrls,
       price,
       stock,
-      category: category.toLowerCase(),
+      category: category,
+      // category: category.toLowerCase(),
     });
     res.status(201).json({ product: newProduct });
   } catch (error) {

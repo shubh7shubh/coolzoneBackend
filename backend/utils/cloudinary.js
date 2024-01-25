@@ -1,4 +1,4 @@
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const fs = require("fs")
 
 
@@ -25,3 +25,4 @@ const uploadOnCloudinary = async (localFilePath) => {
         return null;
     }
 }
+module.exports = uploadOnCloudinary   

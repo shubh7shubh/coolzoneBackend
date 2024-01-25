@@ -44,7 +44,7 @@ exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
 
 
 exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
-  const { coupon } = req.query;
+  const { coupon, total } = req.query;
 
   const discount = await Coupon.findOne({ code: coupon });
 

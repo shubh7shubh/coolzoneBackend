@@ -9,8 +9,8 @@ const path = require("path");
 // Create Banner -- Admin
 exports.createBanner = catchAsyncErrors(async (req, res, next) => {
   let images = [];
-// console.log(req.files)
-  if ( req.files.images === "string") {
+  // console.log(req.files)
+  if (req.files.images === "string") {
     images.push(req.files.images);
   } else {
     images = req.files.images;
@@ -19,9 +19,9 @@ exports.createBanner = catchAsyncErrors(async (req, res, next) => {
   const imagesLinks = [];
 
   for (let i = 0; i < images.length; i++) {
-    const file= images[i];
-    const filepath= path.resolve(__dirname,'../uploads',file.name);
-   
+    const file = images[i];
+    const filepath = path.resolve(__dirname, '../uploads', file.name);
+
     await file.mv(filepath);
     const result = await cloudinary.v2.uploader.upload(filepath, {
       folder: "banners",
@@ -36,11 +36,11 @@ exports.createBanner = catchAsyncErrors(async (req, res, next) => {
   req.body.images = imagesLinks;
   req.body.user = req.user.id;
 
-  const banner = await bannerModel.create(req.body);
+  // const banner = await bannerModel.create(req.body);
 
   res.status(201).json({
     success: true,
-    banner,
+    // banner,
   });
 });
 
@@ -81,30 +81,30 @@ exports.updateBanneer = catchAsyncErrors(async (req, res, next) => {
 
   // Images Start Here
   let images = [];
-if(req.files && req.files.images){
-  if (req.files.images.length) {
-    images = req.files.images;
-  } else {
-    images.push(req.files.images);
-   
+  if (req.files && req.files.images) {
+    if (req.files.images.length) {
+      images = req.files.images;
+    } else {
+      images.push(req.files.images);
+
+    }
   }
-}
 
   if (images !== undefined) {
     // Deleting Images From Cloudinary
     for (let i = 0; i < banner.images.length; i++) {
-      const file= banner.images[i];
-   
+      const file = banner.images[i];
+
       await cloudinary.v2.uploader.destroy(file.public_id);
     }
-  
-      
+
+
     // banner.images[i].public_id--------------^
     const imagesLinks = [];
 
     for (let i = 0; i < images.length; i++) {
-      const file= images[i];
-      const filepath= path.resolve(__dirname,'../uploads',file.name);
+      const file = images[i];
+      const filepath = path.resolve(__dirname, '../uploads', file.name);
       await file.mv(filepath);
       const result = await cloudinary.v2.uploader.upload(filepath, {
         folder: "banners",
@@ -143,8 +143,8 @@ exports.deleteBanner = catchAsyncErrors(async (req, res, next) => {
 
   // Deleting Images From Cloudinary
   for (let i = 0; i < bannerr.images.length; i++) {
-    const file= bannerr.images[i];
- 
+    const file = bannerr.images[i];
+
     await cloudinary.v2.uploader.destroy(file.public_id);
   }
 

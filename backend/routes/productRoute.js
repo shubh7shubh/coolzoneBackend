@@ -20,6 +20,7 @@ const {
 
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+const { multerMiddleware } = require("../middleware/multer");
 const router = express.Router();
 
 // const path = require("path");
@@ -45,12 +46,15 @@ router
 //   multerMiddleware.array("productImages", 5),
 //   createProduct
 // );
+
 router.route("/admin/product/new").post(
   isAuthenticatedUser,
   authorizeRoles("admin"),
-  // multerMiddleware.array("productImages", 5),
+  multerMiddleware.array("productImages", 4),
   createProduct
 );
+
+
 
 router
   .route("/admin/bulkproducts/new")

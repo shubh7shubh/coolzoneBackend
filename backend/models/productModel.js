@@ -136,7 +136,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter Name"],
     },
-    // images: [imageSchema], // Use the defined imageSchema for the images array
     price: {
       type: Number,
       required: [true, "Please enter Price"],
@@ -149,6 +148,17 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter Category"],
       trim: true,
+    },
+    productImages: {
+      type: [{
+        type: String, // Assuming that the productImages will be stored as strings (Cloudinary links)
+      }],
+      validate: {
+        validator: function (images) {
+          return images.length <= 4;
+        },
+        message: "A product can have at most 4 images.",
+      },
     },
   },
   {
