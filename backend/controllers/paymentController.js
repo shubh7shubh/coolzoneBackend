@@ -43,6 +43,24 @@ exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
 })
 
 
+// exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
+//   const { coupon, total } = req.query;
+
+//   const discount = await Coupon.findOne({ code: coupon });
+
+//   if (!discount) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "No discount found",
+//     });
+//   }
+
+//   return res.status(200).json({
+//     success: true,
+//     discount: discount.amount,
+//   });
+// });
+
 exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
   const { coupon, total } = req.query;
 
@@ -55,11 +73,48 @@ exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
     });
   }
 
-  return res.status(200).json({
-    success: true,
-    discount: discount.amount,
-  });
+  let discountedAmount;
+
+  switch (discount.amount) {
+    case 2000:
+      if (total >= 10000) {
+        discountedAmount = discount.amount;
+      }
+      break;
+
+    case 1000:
+      if (total >= 5000) {
+        discountedAmount = discount.amount;
+      }
+      break;
+
+    case 100:
+      if (total >= 1000) {
+        discountedAmount = discount.amount;
+      }
+      break;
+
+    default:
+      // Handle other cases if needed
+      return res.status(400).json({
+        success: false,
+        message: "Invalid discount amount",
+      });
+  }
+
+  if (discountedAmount) {
+    return res.status(200).json({
+      success: true,
+      discount: discountedAmount,
+    });
+  } else {
+    return res.status(400).json({
+      success: false,
+      message: "Discount not applicable for the given total",
+    });
+  }
 });
+
 
 
 exports.allCoupons = catchAsyncErrors(async (req, res, next) => {

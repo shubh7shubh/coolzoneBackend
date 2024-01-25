@@ -55,7 +55,6 @@ router.route("/admin/product/new").post(
 );
 
 
-
 router
   .route("/admin/bulkproducts/new")
   .post(isAuthenticatedUser, authorizeRoles("admin"), addProductsInBulk);
