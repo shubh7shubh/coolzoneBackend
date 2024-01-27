@@ -29,7 +29,7 @@ router
 // // route - /api/v1/payment/coupon/all
 router
   .route("/coupon/all")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), allCoupons);
+  .get(isAuthenticatedUser, allCoupons);
 
 // // route - /api/v1/payment/coupon/:id
 router
