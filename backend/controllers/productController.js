@@ -242,7 +242,7 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   if (featured) product.featured = featured
   if (bestSeller) product.bestSeller = bestSeller
   if (description) product.description = description
-  if (specification) product.stock = specification
+  if (specification) product.specification = specification
 
   // Replace productImages with new images if provided in the request
   if (req.files && req.files.length > 0) {
