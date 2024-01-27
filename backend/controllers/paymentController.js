@@ -24,16 +24,16 @@ exports.sendStripeApiKey = catchAsyncErrors(async (req, res, next) => {
 
 exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
 
-  const { coupon, amount } = req.body
+  const { coupon, amount, description } = req.body
 
-  if (!coupon || !amount) {
+  if (!coupon || !amount || !description) {
     return res.status(400).json({
       success: false,
       message: "Invalid coupon data data",
     });
   }
 
-  await Coupon.create({ code: coupon, amount })
+  await Coupon.create({ code: coupon, amount, description })
 
   return res.status(201).json({
     success: true,

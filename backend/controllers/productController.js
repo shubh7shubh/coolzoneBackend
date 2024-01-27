@@ -39,10 +39,14 @@ exports.getAllCategories = catchAsyncErrors(async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, price, stock, category } = req.body;
+    const { name, price, stock, category, featured, bestSeller, description, specification } = req.body;
 
-    // console.log("req.body:", req.body); // Log the entire req.body to check text fields
-    // console.log("req.files:", req.files); // Log the files received
+    if (!name || !price || !stock || !category || !featured || !bestSeller || !description || !specification) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing fields"
+      })
+    }
 
     // Get the Cloudinary URLs for the uploaded images
     const imageUrls = await Promise.all(req.files.map(async (file) => {
@@ -62,40 +66,20 @@ exports.createProduct = async (req, res, next) => {
       productImages: imageUrls,
       price,
       stock,
-      category: category,
-      // category: category.toLowerCase(),
+      category: category.toLowerCase(),
+      featured,
+      bestSeller,
+      description,
+      specification
     });
-    res.status(201).json({ product: newProduct });
+    res.status(201).json({ success: true, product: newProduct });
   } catch (error) {
     console.error(error);
     // Handle the error appropriately, send an error response, etc.
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-// exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-//   let images = Array.isArray(req.files.productImages) ? req.files.productImages : [req.files.productImages];
 
-
-//   console.log(images, "images")
-//   // for (const file of images) {
-//   //   const { path: filepath } = file;
-//   //   const result = await cloudinary.uploader.upload(filepath, { folder: "products" });
-//   //   console.log(result, "result")
-//   //   imagesLinks.push({
-//   //     public_id: result.public_id,
-//   //     url: result.secure_url,
-//   //   });
-//   //   // fs.unlinkSync(filepath); // Delete the uploaded image from local storage
-//   // }
-//   // console.log(imagesLinks, "images")
-//   const { name, category, price, stock } = req.body;
-//   const product = await Product.create({ name, category, price, stock, images: imagesLinks });
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Product created successfully"
-//   });
-// });
 // =============================================
 exports.addProductsInBulk = catchAsyncErrors(async (req, res) => {
   try {
@@ -243,17 +227,33 @@ exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
 // // Update Product -- Admin
 
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
-  const { name, category, price, stock } = req.body;
+  const { name, category, price, stock, featured, bestSeller, description, specification } = req.body;
   let product = await Product.findById(req.params.id);
 
   if (!product) {
     return next(new ErrorHander("Product not found", 404));
   }
 
+  // Update basic fields
   if (name) product.name = name
   if (price) product.price = price
   if (category) product.category = category
   if (stock) product.stock = stock
+  if (featured) product.featured = featured
+  if (bestSeller) product.bestSeller = bestSeller
+  if (description) product.description = description
+  if (specification) product.stock = specification
+
+  // Replace productImages with new images if provided in the request
+  if (req.files && req.files.length > 0) {
+    const newImageUrls = await Promise.all(req.files.map(async (file) => {
+      const imageUrl = await uploadOnCloudinary(file.path);
+      return imageUrl.secure_url;
+    }));
+
+    product.productImages = newImageUrls;
+  }
+
 
   await product.save();
 
@@ -525,16 +525,16 @@ exports.deleteFromWishlist = async (req, res, next) => {
 //   console.log({ succecss: true });
 // };
 
-// const deleteRandomsProducts = async (count = 10) => {
-//   const products = await Product.find({}).skip(2);
+exports.deleteRandomsProducts = async (count = 10) => {
+  const products = await Product.find({}).skip(2);
 
-//   for (let i = 0; i < products.length; i++) {
-//     const product = products[i];
-//     await product.deleteOne();
-//   }
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    await product.deleteOne();
+  }
 
-//   console.log({ succecss: true });
-// };
+  console.log({ succecss: true });
+};
 
 // generateRandomProducts(20)
 

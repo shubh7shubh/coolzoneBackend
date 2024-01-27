@@ -160,6 +160,30 @@ const productSchema = new mongoose.Schema(
         message: "A product can have at most 4 images.",
       },
     },
+    description: {
+      type: String,
+      required: [true, "Please Enter product Description"],
+    },
+    specification: {
+      type: String,
+      required: [true, "Please Enter product specification"],
+    },
+    // returnPolicy: {
+    //   type: Boolean,
+    //   required: [true, "Please Enter returnPolicy "],
+    //   default: "No returns allowed",
+
+    // },
+    featured: {
+      type: Boolean,
+      required: [true, "Please Enter product featured"]
+    },
+    bestSeller: {
+      type: Boolean,
+      required: [true, "Please Enter product best_seller"]
+    },
+
+
   },
   {
     timestamps: true,

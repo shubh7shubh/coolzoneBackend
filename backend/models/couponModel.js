@@ -65,6 +65,10 @@ const schema = new mongoose.Schema({
     type: Number,
     required: [true, "Please enter the Discount Amount"],
   },
+  description: {
+    type: String,
+    required: [true, "Please enter the Discount Amount"],
+  },
 });
 
 module.exports = mongoose.model("Coupon", schema);

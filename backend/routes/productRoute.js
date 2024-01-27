@@ -17,6 +17,7 @@ const {
   getAllCategories,
   getWishlist,
   deleteFromWishlist,
+  deleteRandomsProducts,
 
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -47,6 +48,8 @@ router
 //   createProduct
 // );
 
+
+// CreateProduct
 router.route("/admin/product/new").post(
   isAuthenticatedUser,
   authorizeRoles("admin"),
@@ -62,7 +65,7 @@ router
 
 router
   .route("/admin/product/:id")
-  .put(isAuthenticatedUser, authorizeRoles("admin"), updateProduct)
+  .put(isAuthenticatedUser, authorizeRoles("admin"), multerMiddleware.array("productImages", 4), updateProduct)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteProduct);
 
 // router.route("/product/wishlist/:id").put(isAuthenticatedUser, addToWishlist)
@@ -78,11 +81,19 @@ router
 
 router.route("/getuserreviews").get(isAuthenticatedUser, getUserReviews)
 
+// delete products route
+
+// router
+//   .route("/admin/product")
+//   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteRandomsProducts);
+
 // Wishlists Products
 
 router.route("/addToWishlist").post(isAuthenticatedUser, addToWishlist)
 router.route("/getWishlist").get(isAuthenticatedUser, getWishlist)
 router.route("/wishlist/:wishlistId").delete(isAuthenticatedUser, deleteFromWishlist)
+
+
 
 
 module.exports = router;
