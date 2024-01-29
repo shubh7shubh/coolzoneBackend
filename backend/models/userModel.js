@@ -63,6 +63,11 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
 
+  referralCount: {
+    type: Number,
+    default: 0,
+  },
+
   myAddress: [
     {
       address: {

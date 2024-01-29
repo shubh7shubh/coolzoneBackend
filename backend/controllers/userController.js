@@ -12,28 +12,46 @@ const cloudinary = require("cloudinary");
 
 // Register a User
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-  // const file= req.files.avatar;
-  // const filepath= path.resolve(__dirname,'../uploads',file.name);
-  // await file.mv(filepath);
+  try {
 
-  // const myCloud = await cloudinary.v2.uploader.upload(filepath, {
-  //   folder: "avatars",
-  //   width: 150,
-  //   crop: "scale",
-  // });
-  // console.log(myCloud);
-  const { name, email, password } = req.body;
+    const { name, email, password, referral } = req.body;
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-    // avatar: {
-    //   public_id: myCloud.public_id,
-    //   url: myCloud.secure_url,
-    // },
-  });
-  sendToken(user, 201, res);
+    const userExist = await User.findOne({ email });
+
+    if (!userExist) {
+      const user = await User.create({
+        name,
+        email,
+        password,
+      });
+
+      if (referral) {
+        const userRef = await User.findOne({ _id: referral });
+        if (userRef) {
+          const count = userRef?.referralCount + 50;
+          userRef.referralCount = count;
+          await userRef?.save();
+
+          const count2 = user?.referralCount + 25;
+          user.referralCount = count2;
+          await user?.save();
+        }
+      }
+
+      sendToken(user, 201, res);
+    }
+    else {
+      res.status(200).send({
+        success: true,
+        message: "Email already exists",
+      });
+    }
+
+  } catch (error) {
+    throw new Error(error)
+
+  }
+
 });
 
 
