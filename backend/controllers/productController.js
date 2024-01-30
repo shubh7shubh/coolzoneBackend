@@ -16,7 +16,15 @@ const uploadOnCloudinary = require("../utils/cloudinary");
 
 exports.getLatestProducts = catchAsyncErrors(async (req, res, next) => {
   let products;
-  products = await Product.find({}).sort({ createdAt: -1 }).limit(10);
+  products = await Product.find({}).sort({ createdAt: -1 }).limit(20);
+  return res.status(200).json({
+    success: true,
+    products
+  })
+})
+exports.getAllHomeProducts = catchAsyncErrors(async (req, res, next) => {
+  let products;
+  products = await Product.find({});
   return res.status(200).json({
     success: true,
     products

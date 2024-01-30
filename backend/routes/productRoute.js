@@ -18,6 +18,7 @@ const {
   getWishlist,
   deleteFromWishlist,
   deleteRandomsProducts,
+  getAllHomeProducts,
 
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -31,10 +32,12 @@ const router = express.Router();
 // const { multerMiddleware } = require('../middleware/multer.js');
 
 
-
 router.route("/products").get(getAllProducts);
 // router.route("/productcategoryList").get(getCategoriesNames);
 router.route("/latest-products").get(getLatestProducts)
+
+router.route("/allProducts").get(getAllHomeProducts)
+
 router.route("/categories").get(getAllCategories)
 
 router

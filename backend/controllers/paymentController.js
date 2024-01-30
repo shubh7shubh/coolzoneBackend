@@ -24,16 +24,16 @@ exports.sendStripeApiKey = catchAsyncErrors(async (req, res, next) => {
 
 exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
 
-  const { coupon, amount, description } = req.body
+  const { coupon, amount, description, limit } = req.body
 
-  if (!coupon || !amount || !description) {
+  if (!coupon || !amount || !description || !limit) {
     return res.status(400).json({
       success: false,
       message: "Invalid coupon data data",
     });
   }
 
-  await Coupon.create({ code: coupon, amount, description })
+  await Coupon.create({ code: coupon, amount, description, limit })
 
   return res.status(201).json({
     success: true,
@@ -64,55 +64,39 @@ exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
 exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
   const { coupon, total } = req.query;
 
-  const discount = await Coupon.findOne({ code: coupon });
+  try {
 
-  if (!discount) {
-    return res.status(400).json({
-      success: false,
-      message: "No discount found",
-    });
-  }
+    const discount = await Coupon.findOne({ code: coupon });
 
-  let discountedAmount;
-
-  switch (discount.amount) {
-    case 2000:
-      if (total >= 10000) {
-        discountedAmount = discount.amount;
-      }
-      break;
-
-    case 1000:
-      if (total >= 5000) {
-        discountedAmount = discount.amount;
-      }
-      break;
-
-    case 100:
-      if (total >= 1000) {
-        discountedAmount = discount.amount;
-      }
-      break;
-
-    default:
-      // Handle other cases if needed
+    if (!discount) {
       return res.status(400).json({
         success: false,
-        message: "Invalid discount amount",
+        message: "No discount found",
       });
-  }
+    }
 
-  if (discountedAmount) {
+    // Check if the total meets the limit criteria
+    if (discount.limit && total > discount.limit) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount not applicable for the given total",
+      });
+    }
+
+    // Apply the discount and send the response
     return res.status(200).json({
       success: true,
-      discount: discountedAmount,
+      discount: discount.amount,
     });
-  } else {
-    return res.status(400).json({
-      success: false,
-      message: "Discount not applicable for the given total",
-    });
+
+
+  } catch (error) {
+    throw new Error(error);
+
   }
+
+
+
 });
 
 
