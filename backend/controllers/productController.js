@@ -43,13 +43,34 @@ exports.getAllCategories = catchAsyncErrors(async (req, res, next) => {
   })
 })
 
+exports.getAllBrands = catchAsyncErrors(async (req, res, next) => {
+
+  let brands;
+  brands = await Product.distinct("brand")
+
+  return res.status(200).json({
+    success: true,
+    brands
+  })
+})
+exports.getAllSubCategories = catchAsyncErrors(async (req, res, next) => {
+
+  let subCategories;
+  subCategories = await Product.distinct("subCategory")
+
+  return res.status(200).json({
+    success: true,
+    subCategories
+  })
+})
+
 
 
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, price, stock, category, featured, bestSeller, description, specification } = req.body;
+    const { name, price, stock, category, featured, bestSeller, description, specification, brand, subCategory } = req.body;
 
-    if (!name || !price || !stock || !category || !featured || !bestSeller || !description || !specification) {
+    if (!name || !price || !stock || !category || !featured || !bestSeller || !description || !specification || !brand || !subCategory) {
       return res.status(400).json({
         success: false,
         message: "Missing fields"
@@ -78,7 +99,9 @@ exports.createProduct = async (req, res, next) => {
       featured,
       bestSeller,
       description,
-      specification
+      specification,
+      brand: brand.toLowerCase(),
+      subCategory
     });
     res.status(201).json({ success: true, product: newProduct });
   } catch (error) {
@@ -146,7 +169,7 @@ exports.addProductsInBulk = catchAsyncErrors(async (req, res) => {
 exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
   try {
 
-    const { category, price, search, sort } = req.query;
+    const { category, price, search, sort, brand, subCategory } = req.query;
 
     const page = Number(req.query.page) || 1
     // 1,2,3,4,5,6,7,8
@@ -170,6 +193,10 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
     }
 
     if (category) baseQuery.category = category;
+
+    if (brand) baseQuery.brand = brand;
+
+    if (subCategory) baseQuery.subCategory = subCategory;
 
     const productsPromise = Product.find(baseQuery)
       .sort(sort && { price: sort === "asc" ? 1 : -1 })

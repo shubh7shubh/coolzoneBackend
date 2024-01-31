@@ -19,6 +19,8 @@ const {
   deleteFromWishlist,
   deleteRandomsProducts,
   getAllHomeProducts,
+  getAllBrands,
+  getAllSubCategories,
 
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -39,6 +41,8 @@ router.route("/latest-products").get(getLatestProducts)
 router.route("/allProducts").get(getAllHomeProducts)
 
 router.route("/categories").get(getAllCategories)
+router.route("/brands").get(getAllBrands)
+router.route("/subCategories").get(getAllSubCategories)
 
 router
   .route("/admin/products")

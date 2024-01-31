@@ -144,9 +144,19 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Please enter Stock"],
     },
+    brand: {
+      type: String,
+      required: [true, "Please enter Brand"],
+      trim: true,
+    },
     category: {
       type: String,
       required: [true, "Please enter Category"],
+      trim: true,
+    },
+    subCategory: {
+      type: String,
+      required: [true, "Please enter sub category"],
       trim: true,
     },
     productImages: {
