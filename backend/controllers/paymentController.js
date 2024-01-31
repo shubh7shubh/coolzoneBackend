@@ -76,7 +76,7 @@ exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
     }
 
     // Check if the total meets the limit criteria
-    if (discount.limit && total > discount.limit) {
+    if (discount.limit && total < discount.limit) {
       return res.status(400).json({
         success: false,
         message: "Discount not applicable for the given total",
@@ -94,9 +94,6 @@ exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
     throw new Error(error);
 
   }
-
-
-
 });
 
 
