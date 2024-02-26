@@ -1,5 +1,6 @@
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Order = require("../models/orderModel");
+const User = require("../models/userModel");
 const reduceStock = require("../utils/features")
 
 
@@ -13,13 +14,31 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     shippingCharges,
     discount,
     total,
+    referral
   } = req.body;
 
   if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) {
     res.status(400).json({
       success: false,
       message: "Invalid order data",
-    })
+    });
+    return;
+  }
+
+  // Check and update referral counts if referral is provided
+  if (referral) {
+    const userRef = await User.findOne({ _id: referral });
+    const currentUser = await User.findOne({ _id: user });
+
+    if (userRef && currentUser) {
+      const count = userRef?.referralCount + 50;
+      userRef.referralCount = count;
+      await userRef?.save();
+
+      const count2 = currentUser?.referralCount + 25;
+      currentUser.referralCount = count2;
+      await currentUser?.save();
+    }
   }
 
   const order = await Order.create({

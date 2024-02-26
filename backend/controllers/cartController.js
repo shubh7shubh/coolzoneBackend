@@ -1,179 +1,96 @@
-const Product = require("../models/productModel");
-const UserM = require("../models/userModel");
-const Cart = require("../models/cartModel");
-const Coupon = require("../models/couponModel");
+// const Product = require("../models/productModel");
+// const UserM = require("../models/userModel");
+// // const Cart = require("../models/cartModel");
+// const Coupon = require("../models/couponModel");
 
-const ErrorHander = require("../utils/errorhander");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const ApiFeatures = require("../utils/apifeatures");
-const cloudinary = require("cloudinary");
-const path = require("path");
+// const ErrorHander = require("../utils/errorhander");
+// const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+// const ApiFeatures = require("../utils/apifeatures");
+// const cloudinary = require("cloudinary");
+// const path = require("path");
 
-// cart 
-exports.userCart = catchAsyncErrors(async (req, res) => {
-    console.log(req.body);
-    const { _id } = req.user._id;
- 
-    try {
-        // if (!cart || !Array.isArray(cart) || cart.length === 0) {
-        //     // Handle the case where cart is undefined, not an array, or empty
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: "Invalid cart data",
-        //     });
-        // }
- 
+// // routes/cart.js
 
-        // let products = [];
-        const user = await UserM.findById(_id);
-        // Check if the user already has a cart
-        const alreadyExistCart = await Cart.findOne({ orderby: user._id }).populate("products.product");
-  
-            let object = {};
-            object.product = req.body._id;
-            object.quantity = req.body.quantity;
-            let getPrice = await Product.findById(req.body._id).select("price").exec();
-            object.price = getPrice.price;
-            
-         if (alreadyExistCart) {
-            // If a cart already exists, remove it
-             alreadyExistCart.products.push(object);
-              
-             let cartTotal = 0;
-             
-             for (let i = 0; i < alreadyExistCart.products.length; i++) {
-                 cartTotal = cartTotal+ alreadyExistCart.products[i].price * alreadyExistCart.products[i].quantity;
-             }
-             alreadyExistCart.cartTotal = cartTotal;
-            
-             const data = await alreadyExistCart.save();
-            console.log(data);
-            res.json(data);
-        }else{
-          let cartTotal = 0; 
-              cartTotal = cartTotal+ object.price * object.quantity;
-          let products = [];
-          products.push(object);
-          let newCart = await new Cart({
-            products,
-            cartTotal,
-            orderby: user?._id,
-          }).save();
-          res.json(newCart);
-        }
-    } catch (error) {
-        throw new Error(error);
-    }
- });
+// const express = require('express');
+// const router = express.Router();
+// const Cart = require('../models/cart');
+
+// // Route to add a product to the cart
+// exports.addToCart = catchAsyncErrors(async (req, res) => {
+//   try {
+//     const { _id } = req.user;
+
+//     const { productId, quantity } = req.body;
 
 
-//  get user cart
-exports.getUserCart = catchAsyncErrors(async (req, res) => {
+//     // Find the user's cart or create a new one
+//     let userCart = await Cart.findOne({ _id });
 
-    const {_id} = req.user;
-    try {
-        const cart = await Cart.findOne({orderby:_id}).populate("products.product");
-         
-        res.json(cart);
-    } catch (error) {
-        throw new Error(error)
-        
-    }
-})
-//  empty cart
-exports.emptytCart = catchAsyncErrors(async (req, res) => {
+//     if (!userCart) {
+//       userCart = new Cart({
+//         userId,
+//         cartItems: [],
+//       });
+//     }
 
-    const {_id} = req.user;
-    try {
-        const user = await UserM.findOne({_id});
-        const cart = await Cart.findOneAndRemove({orderby:user._id});
-        res.json(cart);
-    } catch (error) {
-        throw new Error(error)
-        
-    }
-});
+//     // Check if the product is already in the cart
+//     const existingCartItem = userCart.cartItems.find(
+//       (item) => item.productId.toString() === productId
+//     );
 
-// apply coupon 
-exports.applyCoupon = catchAsyncErrors(async (req, res) => {
-    const { coupon } = req.body;
-    const { _id } = req.user;
-    try {
-      const validCoupon = await Coupon.findOne({ name : coupon });
-     
-      if (!validCoupon === null) {
-        throw new Error('Invalid Coupon');
-      }
-      
+//     if (existingCartItem) {
+//       // If the product is already in the cart, update the quantity
+//       existingCartItem.quantity += quantity;
+//     } else {
+//       // If the product is not in the cart, add it
+//       userCart.cartItems.push({ productId, quantity });
+//     }
 
-      const user = await UserM.findOne({ _id });
+//     // Update the subtotal, tax, and total in the cart
+//     userCart.subtotal = calculateSubtotal(userCart.cartItems);
+//     userCart.tax = calculateTax(userCart.subtotal);
+//     userCart.shippingCharges = calculateShippingCharges(cartItemsTotal);
+//     userCart.total = calculateTotal(userCart.subtotal, userCart.tax, userCart.shippingCharges, userCart.discount);
 
-      let cartt = await Cart.findOne({ orderby: user._id }).populate("products.product");
-  
-      if (cartt) {
-        const cartTotal = cartt.cartTotal;
-         
-        let totalAfterDiscount = 0;
-         
-         if(validCoupon.percentage ==  false){
-           
-            totalAfterDiscount = (cartTotal - validCoupon.discount).toFixed(2);
-          }else{
-            console.log(validCoupon);
-            totalAfterDiscount = (cartTotal - (cartTotal * validCoupon.discount) / 100).toFixed(2);
-          }
-        // let totalAfterDiscount = (cartTotal - (cartTotal * validCoupon.discount) / 100).toFixed(2);
-        // console.log("asdasD"+totalAfterDiscount);
-        await Cart.findOneAndUpdate(
-          { orderby: user._id },
-          { totalAfterDiscount },
-          { new: true }
-        );
-        res.status(200).json({
-          success: true,
-          message: "Applied the coupon successfully",
-          amount:totalAfterDiscount,
-          message: `your total amount After Discount is ${totalAfterDiscount}`,
-        });
-      } else {
-        // Handle the case where cartTotal is undefined
-        res.status(400).json({
-          success: false,
-          message: 'Cart is empty',
-        });
-      }
-    } catch (error) {
-      throw new Error(error);
-    }
-  });
+//     // Save the updated cart to the database
+//     await userCart.save();
 
+//     res.status(200).json({ message: 'Product added to cart successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
+// // Helper functions to calculate subtotal, tax, and total
+// const calculateSubtotal = async (cartItems) => {
+//   let subtotal = 0;
 
+//   for (const item of cartItems) {
+//     // Fetch the product details from the Product model
+//     const product = await Product.findById(item.productId);
 
+//     if (product) {
+//       // Assuming item.quantity is the quantity of the product in the cart
+//       subtotal += product.price * item.quantity;
+//     }
+//   }
 
+//   return subtotal;
+// };
 
+// const calculateTax = (subtotal) => {
+//   // Assuming tax is 18% of the subtotal
+//   return Math.round(subtotal * 0.18);
+// };
 
+// const calculateTotal = (subtotal, tax, shipping, discount) => {
+//   return subtotal + tax + shipping - discount;
+// };
 
+// // Helper function to calculate shipping charges
+// const calculateShippingCharges = (cartItemsTotal) => {
+//   // If cart items total is lower than 1000, set shipping charges to 200; otherwise, set it to 0
+//   return cartItemsTotal < 1000 ? 200 : 0;
+// };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//  commmetn

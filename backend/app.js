@@ -30,7 +30,7 @@ const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const banner = require("./routes/bannerRoute");
 const coupon = require("./routes/couponRoute");
-const cart = require("./routes/cartRoute");
+// const cart = require("./routes/cartRoute");
 const membership = require("./routes/membershipRoute");
 const Address = require("./routes/addressRoute");
 
@@ -41,7 +41,7 @@ app.use("/api/v1", order);
 app.use("/api/v1", payment);
 app.use("/api/v1", banner);
 app.use("/api/v1", coupon);
-app.use("/api/v1", cart);
+// app.use("/api/v1", cart);
 app.use("/api/v1", membership);
 app.use("/api/v1", Address);
 

@@ -169,7 +169,7 @@ exports.addProductsInBulk = catchAsyncErrors(async (req, res) => {
 exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
   try {
 
-    const { category, price, search, sort, brand, subCategory } = req.query;
+    const { category, price, search, sort, brand, subCategory, featured, bestSeller } = req.query;
 
     const page = Number(req.query.page) || 1
     // 1,2,3,4,5,6,7,8
@@ -197,6 +197,10 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
     if (brand) baseQuery.brand = brand;
 
     if (subCategory) baseQuery.subCategory = subCategory;
+
+    if (featured) baseQuery.featured = featured;
+
+    if (bestSeller) baseQuery.bestSeller = bestSeller;
 
     const productsPromise = Product.find(baseQuery)
       .sort(sort && { price: sort === "asc" ? 1 : -1 })
