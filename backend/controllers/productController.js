@@ -68,9 +68,9 @@ exports.getAllSubCategories = catchAsyncErrors(async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, price, stock, category, featured, bestSeller, description, specification, brand, subCategory } = req.body;
+    const { name, price, stock, category, featured, bestSeller, description, specification, brand, subCategory, mrp, warrantyPeriod } = req.body;
 
-    if (!name || !price || !stock || !category || !featured || !bestSeller || !description || !specification || !brand || !subCategory) {
+    if (!name || !price || !stock || !category || !featured || !bestSeller || !description || !specification || !brand || !subCategory || !mrp || !warrantyPeriod) {
       return res.status(400).json({
         success: false,
         message: "Missing fields"
@@ -84,8 +84,8 @@ exports.createProduct = async (req, res, next) => {
       return imageUrl.secure_url; // Assuming you want to store the secure URL
     }));
     // Check the number of images
-    if (imageUrls.length > 4) {
-      return res.status(400).json({ success: false, message: "Only 4 images are allowed." });
+    if (imageUrls.length > 6) {
+      return res.status(400).json({ success: false, message: "Only 6 images are allowed." });
     }
 
     // console.log(imageUrls, "sdfkljsdlk");
@@ -94,6 +94,7 @@ exports.createProduct = async (req, res, next) => {
       name,
       productImages: imageUrls,
       price,
+      mrp,
       stock,
       category: category.toLowerCase(),
       featured,
@@ -101,7 +102,8 @@ exports.createProduct = async (req, res, next) => {
       description,
       specification,
       brand: brand.toLowerCase(),
-      subCategory
+      subCategory,
+      warrantyPeriod,
     });
     res.status(201).json({ success: true, product: newProduct });
   } catch (error) {

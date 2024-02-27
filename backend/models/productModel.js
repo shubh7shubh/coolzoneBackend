@@ -140,6 +140,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Please enter Price"],
     },
+    mrp: {
+      type: Number,
+      required: [true, "Please enter MRP"],
+    },
     stock: {
       type: Number,
       required: [true, "Please enter Stock"],
@@ -147,7 +151,10 @@ const productSchema = new mongoose.Schema(
     brand: {
       type: String,
       required: [true, "Please enter Brand"],
-      trim: true,
+    },
+    warrantyPeriod: {
+      type: String,
+      required: [true, "Please enter Warranty Period"],
     },
     category: {
       type: String,
@@ -165,9 +172,9 @@ const productSchema = new mongoose.Schema(
       }],
       validate: {
         validator: function (images) {
-          return images.length <= 4;
+          return images.length <= 6;
         },
-        message: "A product can have at most 4 images.",
+        message: "A product can have at most 6 images.",
       },
     },
     description: {

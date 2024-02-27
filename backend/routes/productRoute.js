@@ -60,7 +60,7 @@ router
 router.route("/admin/product/new").post(
   isAuthenticatedUser,
   authorizeRoles("admin"),
-  multerMiddleware.array("productImages", 4),
+  multerMiddleware.array("productImages", 6),
   createProduct
 );
 
