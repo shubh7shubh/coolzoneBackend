@@ -159,12 +159,12 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, "Please enter Category"],
-      trim: true,
+      // trim: true,
     },
     subCategory: {
       type: String,
       required: [true, "Please enter sub category"],
-      trim: true,
+      // trim: true,
     },
     productImages: {
       type: [{
