@@ -30,11 +30,10 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     const userRef = await User.findOne({ _id: referral });
     const currentUser = await User.findOne({ _id: user });
 
-    if (userRef && currentUser) {
+    if (userRef && currentUser && userRef._id.toString() !== currentUser._id.toString()) {
       const count = userRef?.referralCount + 50;
       userRef.referralCount = count;
       await userRef?.save();
-
       const count2 = currentUser?.referralCount + 25;
       currentUser.referralCount = count2;
       await currentUser?.save();
