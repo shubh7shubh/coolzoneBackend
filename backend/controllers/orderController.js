@@ -10,17 +10,18 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     orderItems,
     user,
     subtotal,
-    tax,
+    // tax,
     shippingCharges,
     discount,
     total,
     referral
   } = req.body;
 
-  if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) {
+  if (!shippingInfo || !orderItems || !user || !subtotal || !total) {
+    // if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) {
     res.status(400).json({
       success: false,
-      message: "Invalid order data",
+      message: "Invalid order data, missing fields",
     });
     return;
   }
@@ -45,7 +46,6 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     orderItems,
     user,
     subtotal,
-    tax,
     shippingCharges,
     discount,
     total,

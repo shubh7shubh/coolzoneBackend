@@ -36,10 +36,10 @@ const schema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    tax: {
-      type: Number,
-      required: true,
-    },
+    // tax: {
+    //   type: Number,
+    //   required: true,
+    // },
     shippingCharges: {
       type: Number,
       required: true,
