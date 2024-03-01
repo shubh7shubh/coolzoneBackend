@@ -33,6 +33,8 @@ const coupon = require("./routes/couponRoute");
 // const cart = require("./routes/cartRoute");
 const membership = require("./routes/membershipRoute");
 const Address = require("./routes/addressRoute");
+const Category = require("./routes/categoryRoute");
+const Brand = require("./routes/brandRoute");
 
 
 app.use("/api/v1", product);
@@ -44,6 +46,8 @@ app.use("/api/v1", coupon);
 // app.use("/api/v1", cart);
 app.use("/api/v1", membership);
 app.use("/api/v1", Address);
+app.use("/api/v1", Category);
+app.use("/api/v1", Brand);
 
 
 
