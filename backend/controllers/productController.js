@@ -268,7 +268,7 @@ exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
 // // Update Product -- Admin
 
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
-  const { name, category, price, stock, featured, bestSeller, description, specification } = req.body;
+  const { name, category, price, stock, featured, bestSeller, description, specification, brand, subCategory, mrp, warrantyPeriod } = req.body;
   let product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -278,12 +278,16 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   // Update basic fields
   if (name) product.name = name
   if (price) product.price = price
+  if (mrp) product.mrp = mrp
   if (category) product.category = category
+  if (subCategory) product.subCategory = subCategory
+  if (brand) product.brand = brand
   if (stock) product.stock = stock
   if (featured) product.featured = featured
   if (bestSeller) product.bestSeller = bestSeller
   if (description) product.description = description
   if (specification) product.specification = specification
+  if (warrantyPeriod) product.warrantyPeriod = warrantyPeriod
 
   // Replace productImages with new images if provided in the request
   if (req.files && req.files.length > 0) {
