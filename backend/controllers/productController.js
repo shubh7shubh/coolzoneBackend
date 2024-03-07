@@ -177,15 +177,23 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
     // 1,2,3,4,5,6,7,8
     // 9,10,11,12,13,14,15,16
     // 17,18,19,20,21,22,23,24
-    const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
+    const limit = Number(process.env.PRODUCT_PER_PAGE) || 50;
     const skip = (page - 1) * limit;
     const baseQuery = {}
 
+    // if (search) {
+    //   baseQuery.name = {
+    //     $regex: search,
+    //     $options: "i",
+    //   }
+    // }
+
     if (search) {
-      baseQuery.name = {
-        $regex: search,
-        $options: "i",
-      }
+      baseQuery.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+      ];
     }
 
     if (price) {
