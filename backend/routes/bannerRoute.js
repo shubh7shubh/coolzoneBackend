@@ -16,7 +16,7 @@ router.route("/banners").get(getAllBanners);
 
 router
   .route("/admin/banner/new")
-  .post(isAuthenticatedUser, authorizeRoles("admin"), multerMiddleware.array("bannerImages"), createBanner);
+  .post(isAuthenticatedUser, authorizeRoles("admin"), multerMiddleware.array("bannerImage"), createBanner);
 
 router
   .route("/admin/getAllBanners")

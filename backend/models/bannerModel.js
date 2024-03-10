@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 
 const BannerSchema = mongoose.Schema({
-  category: {
-    type: String,
-    required: [true, "Please Enter Product Category"],
-  },
-
   bannerImages: {
     type: [{
-      type: String,
-    }]
+      bannerImage: {
+        type: String,
+      },
+      category: {
+        type: String,
+        required: [true, "Please Enter Product Category"],
+      },
+    }],
   },
   createdAt: {
     type: Date,

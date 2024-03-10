@@ -37,9 +37,7 @@ const router = express.Router();
 router.route("/products").get(getAllProducts);
 // router.route("/productcategoryList").get(getCategoriesNames);
 router.route("/latest-products").get(getLatestProducts)
-
 router.route("/allProducts").get(getAllHomeProducts)
-
 router.route("/categories").get(getAllCategories)
 router.route("/brands").get(getAllBrands)
 router.route("/subCategories").get(getAllSubCategories)
@@ -54,7 +52,6 @@ router
 //   multerMiddleware.array("productImages", 5),
 //   createProduct
 // );
-
 
 // CreateProduct
 router.route("/admin/product/new").post(
