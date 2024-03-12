@@ -12,6 +12,11 @@ const BannerSchema = mongoose.Schema({
       },
     }],
   },
+  subCategory: {
+    type: String,
+    required: [true, "Please enter sub category"],
+    trim: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
