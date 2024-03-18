@@ -8,9 +8,11 @@ const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const path = require("path");
 const cloudinary = require("cloudinary");
+const otpModel = require('../models/otpModel');
+const axios = require('axios')
 
 
-// Register a User
+//********************* Register a User *********************//
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
 
@@ -54,10 +56,168 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
 });
 
+//*********************OTP REGISTER USER********************** */
+
+exports.otpRegister = catchAsyncErrors(async (req, res, next) => {
+  try {
+
+    const { mobileNo } = req.body;
+
+    if (!mobileNo) {
+      return res.status(400).json({ message: "Enter Mobile no" });
+    }
+
+    //If the user is Already present. As, user already have an account.
+    // const user = await userModel.findOne({
+    //   mobileNumber: mobileNumber,
+    // });
+
+    // if (user) {
+    //   return res.status(400).send({ message: "User already registered!, Please Login" });
+    // }
+
+
+    const min = 1000;
+    const max = 9999;
+    const OTP = Math.floor(Math.random() * (max - min + 1)) + min;
+    // console.log(OTP);
+    const key = process.env.OTP_KEY
+    const apiResponse = await axios.get(
+      `https://www.fast2sms.com/dev/bulkV2?authorization=${key}&route=otp&variables_values=${OTP}&flash=0&numbers=${mobileNo}`
+    );
+
+
+    if (apiResponse.data.message === "Invalid Numbers") {
+      return res.status(400).send({ message: "Invalid Numbers! Enter  Correct Number" });
+    }
+
+    const otp = await otpModel({
+      mobileNo: mobileNo,
+      otp: OTP,
+    });
+
+    await otp.save();
+    res.status(200).send({ message: "Otp send successfully!", mobileNo: mobileNo })
+
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .send({ status: false, message: err.message })
+  }
+})
+
+//**********************VERIFY OTP SIGNUP/Register************************ */
+
+exports.verifyOtpRegister = catchAsyncErrors(async (req, res, next) => {
+  try {
+
+    const { name, mobileNo, referral, otp } = req.body;
+
+    const otpHolder = await otpModel.find({
+      mobileNo: mobileNo,
+    });
+
+    const userData = await User.findOne({
+      mobileNo: mobileNo,
+    });
+
+    if (!userData) {
+
+      // if (!otpHolder || otpHolder.otp !== otp) {
+      //   return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
+      // }
+      const mobileLength = otpHolder.length;
+
+      if (!(otpHolder[mobileLength - 1]?.otp == otp)) {
+        return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
+      }
+
+      const newUser = new User({ name, mobileNo });
+      const result = await newUser.save();
+
+      // console.log(result)
+
+      // if (referral) {
+      //   const userRef = await User.findOne({ _id: referral });
+      //   if (userRef) {
+      //     const count = userRef?.referralCount + 50;
+      //     userRef.referralCount = count;
+      //     await userRef?.save();
+
+      //     const count2 = User?.referralCount + 25;
+      //     User.referralCount = count2;
+      //     await User?.save();
+      //   }
+      // }
+
+      // const token = jwt.sign(
+      //   {
+      //     id: result._id,
+      //   },
+      //   process.env.JWT_SECRET,
+      //   {
+      //     expiresIn: "7d",
+      //   }
+      // );
+
+      const OTPDelete = await otpModel.deleteMany({
+        mobileNo: mobileNo,
+      });
+
+      // return res.status(200).send({
+      //   message: "User Registration Successful!",
+      //   token: token,
+      //   data: result,
+      // });
+
+      sendToken(result, 200, res);
+
+    } else {
+      // if (!otpHolder || otpHolder.otp !== otp) {
+      //   return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
+      // }
+      const mobileLength = otpHolder.length;
+
+      if (!(otpHolder[mobileLength - 1]?.otp == otp)) {
+        return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
+      }
+
+      // const token = jwt.sign(
+      //   {
+      //     id: user._id,
+      //   },
+      //   process.env.JWT_SECRET,
+      //   {
+      //     expiresIn: "7d",
+      //   }
+      // );
+
+      const OTPDelete = await otpModel.deleteMany({
+        mobileNo: mobileNo,
+      });
+
+      // return res.status(200).send({
+      //   message: "User Verify Successful!",
+      //   token: token,
+      //   data: user,
+      // });
+      sendToken(userData, 200, res);
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message })
+  }
+
+});
 
 
 
-// Login User
+
+
+
+//********************* */ Login User *************************
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -81,6 +241,127 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
   sendToken(user, 200, res);
 });
+
+
+// Login User Using MobileNumber
+exports.otpLogin = catchAsyncErrors(async (req, res, next) => {
+  try {
+
+    const { mobileNo } = req.body;
+
+    if (!mobileNo) {
+      return res.status(400).json({ message: "Enter Mobile Number" });
+    }
+
+    const user = await User.findOne({
+      mobileNo: mobileNo,
+    });
+
+    if (!user) {
+      return res.status(400).send({ message: "mobile number not registered!" });
+    }
+
+    const min = 1000;
+    const max = 9999;
+    const OTP = Math.floor(Math.random() * (max - min + 1)) + min;
+    // console.log(OTP);
+    const key = process.env.OTP_KEY
+    const apiResponse = await axios.get(
+      `https://www.fast2sms.com/dev/bulkV2?authorization=${key}&route=otp&variables_values=${OTP}&flash=0&numbers=${mobileNumber}`
+    );
+    // console.log(apiResponse.data);
+
+    if (apiResponse.data.message === "Invalid Numbers") {
+      return res.status(400).send({ message: "Invalid Numbers! Enter  Correct Number" });
+    }
+
+    const otp = await otpModel({
+      mobileNo: mobileNo,
+      otp: OTP,
+
+    });
+
+    // sendToken(user, 200, res);
+
+    await otp.save();
+    res.status(200).send({ message: "Otp send successfully!", mobileNo: mobileNo, opt: opt });
+
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message })
+  }
+});
+
+
+// Verify Login Otp
+exports.verifyOpt = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { mobileNo, otp, notificationToken } = req.body;
+
+    const otpHolder = await otpModel.find({ mobileNo })
+      .sort({ createdAt: -1 })
+      .limit(1);
+
+    const user = await User.findOne({ mobileNo });
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "Mobile number not registered"
+      });
+    }
+
+    const userId = user._id.toString();
+
+    if (otpHolder.length === 0 || otpHolder[0].otp !== otp) {
+      return res.status(400).send({
+        success: false,
+        message: "Enter correct OTP!"
+      });
+    }
+
+    if (otpHolder[0].mobileNo !== mobileNo) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid OTP!"
+      });
+    }
+
+    // const token = jwt.sign(
+    //   { id: userId }, 
+    //   process.env.JWT_SECRET, 
+    //   { expiresIn: "7d" }
+    //   );
+
+    await otpModel.deleteMany({ mobileNo });
+
+    // // Update user's notificationToken
+    // user.notificationToken = notificationToken;
+    // await user.save();
+
+    // return res.status(200).send({
+    //     message: "User logged in successfully!",
+    //     token: token,
+    //     data: user,
+    // });
+
+    sendToken(user, 200, res);
+
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
+
+
+
+
+
+
 
 // Logout User
 exports.logout = catchAsyncErrors(async (req, res, next) => {

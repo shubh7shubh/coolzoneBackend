@@ -14,17 +14,38 @@ const {
   updateUserRole,
   deleteUser,
   createCustomer,
-  updateCustomerDetails
+  updateCustomerDetails,
+  otpLogin,
+  verifyOpt,
+  verifyOtpRegister,
+  otpRegister
 
 } = require("../controllers/userController");
 const { isAuthenticatedUser, authorizeRoles, isAuthenticatedAdmin } = require("../middleware/auth");
 
 const router = express.Router();
-
+//****************** Regiter a user ***************************** */
 router.route("/register").post(registerUser);
 
+//otp register using mobile number
+router.route("/otpRegister").post(otpRegister);
+
+// verify the otp sent
+router.route("/verifyOtpRegister").post(verifyOtpRegister);
+
+
+//******************************login a user****************************/ 
 router.route("/login").post(loginUser);
 
+//otp login
+router.route("/otpLogin").post(otpLogin)
+
+//verifying that loginOtp
+router.route("/verifyLoginOtp").post(verifyOpt)
+
+
+
+//************************************************************ */
 router.route("/password/forgot").post(forgotPassword);
 
 router.route("/password/reset/:token").put(resetPassword);

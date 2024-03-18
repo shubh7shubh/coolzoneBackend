@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    required: [true, "Please Enter Your Email"],
-    unique: true,
+    // required: [true, "Please Enter Your Email"],
+    // unique: true,
     validate: [validator.isEmail, "Please Enter a valid Email"],
   },
   contactNumber: {
@@ -106,8 +106,8 @@ const userSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    required: [true, "Please Enter Your Password"],
-    minLength: [8, "Password should be greater than 8 characters"],
+    // required: [true, "Please Enter Your Password"],
+    // minLength: [8, "Password should be greater than 8 characters"],
     select: false,
   },
   DOB: {
