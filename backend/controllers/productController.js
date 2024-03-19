@@ -238,6 +238,46 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comment } = req.body
+
+  const product = await Product.findById(req.params.id)
+
+  if (product) {
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    )
+
+    if (alreadyReviewed) {
+      res.status(400)
+      throw new Error('Product already reviewed')
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    }
+
+    product.reviews.push(review)
+
+    product.numReviews = product.reviews.length
+
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length
+
+    await product.save()
+    res.status(201).json({ message: 'Review added' })
+  } else {
+    res.status(404)
+    throw new Error('Product not found')
+  }
+})
+
+
+
 
 // Get All Product (Admin)
 exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
@@ -335,47 +375,47 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Create New Review or Update the review
-exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
-  const { rating, comment, productId } = req.body;
+// exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+//   const { rating, comment, productId } = req.body;
 
-  const review = {
-    user: req.user._id,
-    name: req.user.name,
-    rating: Number(rating),
-    comment,
-  };
+//   const review = {
+//     user: req.user._id,
+//     name: req.user.name,
+//     rating: Number(rating),
+//     comment,
+//   };
 
-  const product = await Product.findById(productId);
+//   const product = await Product.findById(productId);
 
-  const isReviewed = product.reviews.find(
-    (rev) => rev.user.toString() === req.user._id.toString()
-  );
+//   const isReviewed = product.reviews.find(
+//     (rev) => rev.user.toString() === req.user._id.toString()
+//   );
 
-  if (isReviewed) {
-    product.reviews.forEach((rev) => {
-      if (rev.user.toString() === req.user._id.toString())
-        (rev.rating = rating), (rev.comment = comment);
-    });
-  } else {
-    product.reviews.push(review);
-    product.numOfReviews = product.reviews.length;
-  }
+//   if (isReviewed) {
+//     product.reviews.forEach((rev) => {
+//       if (rev.user.toString() === req.user._id.toString())
+//         (rev.rating = rating), (rev.comment = comment);
+//     });
+//   } else {
+//     product.reviews.push(review);
+//     product.numOfReviews = product.reviews.length;
+//   }
 
-  let avg = 0;
+//   let avg = 0;
 
-  product.reviews.forEach((rev) => {
-    avg += rev.rating;
-  });
+//   product.reviews.forEach((rev) => {
+//     avg += rev.rating;
+//   });
 
-  product.ratings = avg / product.reviews.length;
+//   product.ratings = avg / product.reviews.length;
 
-  await product.save({ validateBeforeSave: false });
+//   await product.save({ validateBeforeSave: false });
 
-  res.status(200).json({
-    success: true,
-    review: review,
-  });
-});
+//   res.status(200).json({
+//     success: true,
+//     review: review,
+//   });
+// });
 
 // Get All Reviews of a product
 exports.getProductReviews = catchAsyncErrors(async (req, res, next) => {

@@ -76,14 +76,20 @@ router
 
 router.route("/product/:id").get(getProductDetails);
 
-router.route("/review").put(isAuthenticatedUser, createProductReview);
+// router.route("/review").put(isAuthenticatedUser, createProductReview);
 
 router
   .route("/reviews")
   .get(getProductReviews)
   .delete(isAuthenticatedUser, deleteReview);
 
-router.route("/getuserreviews").get(isAuthenticatedUser, getUserReviews)
+// router.route('/:id/reviews').post(protect, createProductReview)
+
+router
+  .route('/:id/reviews')
+  .post(isAuthenticatedUser, createProductReview)
+
+// router.route("/getuserreviews").get(isAuthenticatedUser, getUserReviews)
 
 // delete products route
 
