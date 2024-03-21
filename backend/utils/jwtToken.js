@@ -1,6 +1,9 @@
 // Create Token and saving in cookie
 
 const sendToken = (user, statusCode, res) => {
+  if (!user) {
+    return res.status(400).json({ success: false, message: "User not found" });
+  }
   const token = user.getJWTToken();
 
   // options for cookie

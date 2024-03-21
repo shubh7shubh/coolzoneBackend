@@ -67,6 +67,11 @@ exports.otpRegister = catchAsyncErrors(async (req, res, next) => {
       return res.status(400).json({ message: "Enter Mobile no" });
     }
 
+    const user = await User.findOne({
+      mobileNo: mobileNo,
+    });
+
+    if (user) return res.status(400).send("User already registered!");
 
     const min = 1000;
     const max = 9999;
@@ -103,111 +108,26 @@ exports.otpRegister = catchAsyncErrors(async (req, res, next) => {
 exports.verifyOtpRegister = catchAsyncErrors(async (req, res, next) => {
   try {
 
-    const { name, mobileNo, referral, otp } = req.body;
+    const { name, mobileNo, referral, otp, email } = req.body;
 
-    const otpHolder = await otpModel.find({
+    const otpHolder = await otpModel.findOne({
       mobileNo: mobileNo,
     });
 
-    // const userData = await User.findOne({
-    //   mobileNo: mobileNo,
-    // });
-
-
-    // if (!userData) {
-
-    // if (!otpHolder || otpHolder.otp !== otp) {
-    //   return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
-    // }
-
-    // const mobileLength = otpHolder.length;
-
-    // if (!(otpHolder[mobileLength - 1]?.otp == otp)) {
-    //   return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
-    // }
-
     // Early return for invalid or expired OTP
-    if (!otpHolder || otpHolder.otp !== otp || otpHolder.createdAt < new Date(new Date() - 5 * 60 * 1000)) {
+    if (!otpHolder || otpHolder.otp !== otp || (Date.now() - otpHolder.createdAt.getTime()) > (5 * 60 * 1000)) {
       console.error("Invalid OTP or OTP expired");
       console.log("Received OTP:", otp);
 
       return res.status(400).send("Invalid OTP or OTP expired");
     }
 
-
-    const newUser = new User({ name, mobileNo });
-
+    const newUser = new User({ name, mobileNo, email });
 
     const result = await newUser.save();
 
-    // console.log(result)
-
-    // if (referral) {
-    //   const userRef = await User.findOne({ _id: referral });
-    //   if (userRef) {
-    //     const count = userRef?.referralCount + 50;
-    //     userRef.referralCount = count;
-    //     await userRef?.save();
-
-    //     const count2 = User?.referralCount + 25;
-    //     User.referralCount = count2;
-    //     await User?.save();
-    //   }
-    // }
-
-    // const token = jwt.sign(
-    //   {
-    //     id: result._id,
-    //   },
-    //   process.env.JWT_SECRET,
-    //   {
-    //     expiresIn: "7d",
-    //   }
-    // );
-
-    // const OTPDelete = await otpModel.deleteMany({
-    //   mobileNo: mobileNo,
-    // });
-
-    // return res.status(200).send({
-    //   message: "User Registration Successful!",
-    //   token: token,
-    //   data: result,
-    // });
-
     sendToken(result, 200, res);
 
-    // } else {
-    //   // if (!otpHolder || otpHolder.otp !== otp) {
-    //   //   return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
-    //   // }
-    //   const mobileLength = otpHolder.length;
-
-    //   if (!(otpHolder[mobileLength - 1]?.otp == otp)) {
-    //     return res.status(400).send({ success: false, message: "Enter Correct OTP!" });
-    //   }
-
-    //   // const token = jwt.sign(
-    //   //   {
-    //   //     id: user._id,
-    //   //   },
-    //   //   process.env.JWT_SECRET,
-    //   //   {
-    //   //     expiresIn: "7d",
-    //   //   }
-    //   // );
-
-    //   const OTPDelete = await otpModel.deleteMany({
-    //     mobileNo: mobileNo,
-    //   });
-
-    //   // return res.status(200).send({
-    //   //   message: "User Verify Successful!",
-    //   //   token: token,
-    //   //   data: user,
-    //   // });
-    //   sendToken(userData, 200, res);
-    // }
   } catch (err) {
     return res
       .status(500)
