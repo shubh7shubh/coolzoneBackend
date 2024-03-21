@@ -10,7 +10,7 @@ const path = require("path");
 const cloudinary = require("cloudinary");
 const otpModel = require('../models/otpModel');
 const axios = require('axios')
-
+const OTP_EXPIRATION_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 //********************* Register a User *********************//
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -325,7 +325,7 @@ exports.verifyOpt = catchAsyncErrors(async (req, res, next) => {
     // }
 
     const rightOtpFind = otpHolder[otpHolder.length - 1];
-    if (rightOtpFind.mobileNumber === mobileNumber && rightOtpFind.otp === otp) {
+    if (rightOtpFind.mobileNo === mobileNo && rightOtpFind.otp === otp) {
       const currentTimestamp = new Date().getTime();
       if (currentTimestamp > rightOtpFind.timestamp + OTP_EXPIRATION_TIME) {
         return res.status(400).send("OTP has expired. Please request a new one.");
@@ -352,7 +352,7 @@ exports.verifyOpt = catchAsyncErrors(async (req, res, next) => {
       //   );
 
       const OTPDelete = await otpModel.deleteMany({
-        mobileNumber: rightOtpFind.mobileNumber,
+        mobileNo: rightOtpFind.mobileNo,
       });
 
       // // Update user's notificationToken

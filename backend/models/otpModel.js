@@ -18,7 +18,7 @@ const mongoose = require("mongoose");
 
 const otpSchema = new mongoose.Schema(
     {
-        mobileNumber: {
+        mobileNo: {
             type: String,
             required: true,
         },
