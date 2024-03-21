@@ -240,6 +240,7 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
 
 exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
   const { rating, comment } = req.body
+  console.log(req.user, "jkdfk")
 
   const product = await Product.findById(req.params.id)
 
@@ -264,9 +265,31 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
 
     product.numReviews = product.reviews.length
 
-    product.rating =
+    const averageRating =
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-      product.reviews.length
+      product.reviews.length;
+
+    // Adjusting the rating based on the specific ranges of average ratings
+    if (averageRating >= 0 && averageRating < 1) {
+      product.rating = 0;
+    } else if (averageRating >= 1 && averageRating < 1.5) {
+      product.rating = 1;
+    } else if (averageRating >= 1.5 && averageRating < 2) {
+      product.rating = 2;
+    } else if (averageRating >= 2 && averageRating < 2.5) {
+      product.rating = 2;
+    } else if (averageRating >= 2.5 && averageRating < 3) {
+      product.rating = 3;
+    } else if (averageRating >= 3 && averageRating < 3.5) {
+      product.rating = 3;
+    } else if (averageRating >= 3.5 && averageRating < 4) {
+      product.rating = 4;
+    } else if (averageRating >= 4 && averageRating < 4.5) {
+      product.rating = 4;
+    } else if (averageRating >= 4.5 && averageRating <= 5) {
+      product.rating = 5;
+    }
+
 
     await product.save()
     res.status(201).json({ message: 'Review added' })
