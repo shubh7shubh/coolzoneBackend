@@ -4,27 +4,32 @@ const Coupon = require("../models/couponModel");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.processPayment = catchAsyncErrors(async (req, res, next) => {
-  const myPayment = await stripe.paymentIntents.create({
-    amount: req.body.amount,
+  const { amount } = req.body;
+
+  if (!amount) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid amount",
+    });
+  }
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: Number(amount) * 100,
     currency: "inr",
-    metadata: {
-      company: "Ecommerce",
-    },
   });
 
-  res
-    .status(200)
-    .json({ success: true, client_secret: myPayment.client_secret });
+  return res.status(201).json({
+    success: true,
+    clientSecret: paymentIntent.client_secret,
+  });
 });
 
 exports.sendStripeApiKey = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ stripeApiKey: process.env.STRIPE_API_KEY });
 });
 
-
 exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
-
-  const { coupon, amount, description, limit } = req.body
+  const { coupon, amount, description, limit } = req.body;
 
   if (!coupon || !amount || !description || !limit) {
     return res.status(400).json({
@@ -33,15 +38,13 @@ exports.newCoupon = catchAsyncErrors(async (req, res, next) => {
     });
   }
 
-  await Coupon.create({ code: coupon, amount, description, limit })
+  await Coupon.create({ code: coupon, amount, description, limit });
 
   return res.status(201).json({
     success: true,
-    message: `Coupon ${coupon} Created Successfully`
-  })
-
-})
-
+    message: `Coupon ${coupon} Created Successfully`,
+  });
+});
 
 // exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
 //   const { coupon, total } = req.query;
@@ -65,7 +68,6 @@ exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
   const { coupon, total } = req.query;
 
   try {
-
     const discount = await Coupon.findOne({ code: coupon });
 
     if (!discount) {
@@ -88,15 +90,10 @@ exports.applyDiscount = catchAsyncErrors(async (req, res, next) => {
       success: true,
       discount: discount.amount,
     });
-
-
   } catch (error) {
     throw new Error(error);
-
   }
 });
-
-
 
 exports.allCoupons = catchAsyncErrors(async (req, res, next) => {
   const coupons = await Coupon.find({});
