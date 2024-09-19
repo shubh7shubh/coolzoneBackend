@@ -3,20 +3,52 @@ const Coupon = require("../models/couponModel");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+// exports.processPayment = catchAsyncErrors(async (req, res, next) => {
+//   const { amount } = req.body;
+//   console.log(process.env.STRIPE_SECRET_KEY);
+//   if (!amount) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid amount",
+//     });
+//   }
+
+//   const paymentIntent = await stripe.paymentIntents.create({
+//     amount: Number(amount) * 100,
+//     currency: "inr",
+//     description: "Payment for order #12345",
+//   });
+
+//   return res.status(201).json({
+//     success: true,
+//     clientSecret: paymentIntent.client_secret,
+//   });
+// });
+
 exports.processPayment = catchAsyncErrors(async (req, res, next) => {
-  const { amount } = req.body;
-  console.log(process.env.STRIPE_SECRET_KEY);
-  if (!amount) {
+  const { amount, shippingInfo } = req.body;
+
+  if (!amount || !shippingInfo) {
     return res.status(400).json({
       success: false,
-      message: "Invalid amount",
+      message: "Invalid amount or missing shipping information",
     });
   }
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: Number(amount) * 100,
+    amount: Number(amount) * 100, // Convert to smallest currency unit
     currency: "inr",
     description: "Payment for order #12345",
+    shipping: {
+      name: shippingInfo.name, // Make sure to pass customer's name
+      address: {
+        line1: shippingInfo.address, // Customer's street address
+        city: shippingInfo.city, // Customer's city
+        state: shippingInfo.state, // Customer's state
+        postal_code: shippingInfo.pinCode, // Customer's postal code
+        country: shippingInfo.country, // Customer's country (e.g., "IN" for India)
+      },
+    },
   });
 
   return res.status(201).json({
