@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.processPayment = catchAsyncErrors(async (req, res, next) => {
   const { amount } = req.body;
-
+  console.log(process.env.STRIPE_SECRET_KEY);
   if (!amount) {
     return res.status(400).json({
       success: false,
@@ -16,6 +16,7 @@ exports.processPayment = catchAsyncErrors(async (req, res, next) => {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Number(amount) * 100,
     currency: "inr",
+    description: "Payment for order #12345",
   });
 
   return res.status(201).json({
